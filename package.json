@@ -1,0 +1,31 @@
+{
+  "name": "react-force-layout",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nils-drechsel/react-force-layout.git"
+  },
+  "author": "Nils J. D. Drechsel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nils-drechsel/react-force-layout/issues"
+  },
+  "homepage": "https://github.com/nils-drechsel/react-force-layout#readme",
+  "devDependencies": {
+    "@types/react": "^16.9.34",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@rehooks/component-size": "^1.0.3",
+    "@types/uuid": "^8.0.0",
+    "fast-equals": "^2.0.0",
+    "react-draggable": "^4.4.3",
+    "uuid": "^8.1.0"
+  }
+}

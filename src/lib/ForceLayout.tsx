@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useEffect, useState, useRef, ReactElement } from 'react';
-import useComponentSize, { ComponentSize } from '@rehooks/component-size'
+import React, { FunctionComponent, useEffect, useState, useRef, ReactElement, MutableRefObject } from 'react';
 import { LayoutElement } from './LayoutElement';
 
 type Props = {
-    forceConstant: number
+    forceConstant: number,
+    dimensions?: Rect,
 }
 
 
@@ -57,7 +57,10 @@ const calculateVector = (centre0: Vector, centre1: Vector): Vector => {
 }
 
 
-const calculateForceVector = (id: string, components: Map<string, Rect>, forceConstant: number): Vector => {
+const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<string, Rect>>, forceConstant: number, dimRef: MutableRefObject<Rect | undefined>): Vector => {
+
+    const components = componentsRef.current;
+
     if (!components.has(id)) return { x: 0, y: 0 };
 
     const component = components.get(id)!;
@@ -68,18 +71,33 @@ const calculateForceVector = (id: string, components: Map<string, Rect>, forceCo
     components.forEach((value: Rect, key: string) => {
         if (key === id) return;
 
+
         const overlap = calculateOverlap(component, value);
         if (overlap > 0) {
             const otherCentre = getCentre(value);
             const v = calculateVector(centre, otherCentre);
             const vl = vectorLength(v);
-            const forceVector = vectorMult(v, forceConstant / vl);
+            const forceVector = vectorMult(v, -forceConstant / vl);
 
             vector = vectorAdd(vector, forceVector);
 
         }
 
-    })
+    });
+
+    const dimensions = dimRef.current;
+
+
+    if (dimensions) {
+        if (component.x < 0) vector = vectorAdd(vector, vectorMult({ x: 1, y: 0 }, forceConstant));
+        else if (component.x + component.width > dimensions.width) vector = vectorAdd(vector, vectorMult({ x: -1, y: 0 }, forceConstant));
+
+        if (component.y < 0) vector = vectorAdd(vector, vectorMult({ x: 0, y: 1 }, forceConstant));
+        else if (component.y + component.height > dimensions.height) vector = vectorAdd(vector, vectorMult({ x: 0, y: -1 }, forceConstant));
+    }
+
+
+
 
     return vector;
 
@@ -88,7 +106,7 @@ const calculateForceVector = (id: string, components: Map<string, Rect>, forceCo
 
 
 
-const wrapElement = (element: ReactElement, components: Map<string, Rect>, setComponents: (callback: (state: Map<string, Rect>) => Map<string, Rect>) => void, forceConstant: number) => {
+const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, Rect>>, setComponents: (callback: (state: Map<string, Rect>) => Map<string, Rect>) => void, forceConstant: number, dimRef: MutableRefObject<Rect | undefined>) => {
 
     const setRect = (id: string, rect: Rect) => {
         setComponents((state: Map<string, Rect>) => {
@@ -98,7 +116,7 @@ const wrapElement = (element: ReactElement, components: Map<string, Rect>, setCo
         })
     }
 
-    const removeComponent = (id: string, ) => {
+    const removeComponent = (id: string,) => {
         setComponents((state: Map<string, Rect>) => {
             const newState = new Map(state);
             newState.delete(id);
@@ -113,7 +131,7 @@ const wrapElement = (element: ReactElement, components: Map<string, Rect>, setCo
             initialY={0}
             setRect={setRect}
             removeComponent={removeComponent}
-            calculateForceVector={(id: string) => calculateForceVector(id, components, forceConstant)}
+            calculateForceVector={(id: string) => calculateForceVector(id, componentsRef, forceConstant, dimRef)}
         >
             {element}
         </LayoutElement>
@@ -132,29 +150,35 @@ export type Rect = {
 
 
 
-export const ForceLayout: FunctionComponent<Props> = ({ children }) => {
+export const ForceLayout: FunctionComponent<Props> = ({ children, forceConstant, dimensions }) => {
 
     const [components, setComponents] = useState(new Map() as Map<string, Rect>);
+    const componentsRef = useRef(components);
+    componentsRef.current = components;
+
+    const dimRef = useRef(dimensions);
+    dimRef.current = dimensions;
 
 
     const style = {
         padding: 0,
         margin: 0,
-        position: "relative",
+        position: "absolute",
         width: "100%",
         height: "100%",
+        zIndex: 901,
+        pointerEvents: "none",
+        touchAction: "none",
     } as React.CSSProperties;
 
 
-    const sizeRef = useRef(null);
-    const sizes = useComponentSize(sizeRef);
+    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, forceConstant, dimRef));
+
 
     return (
-
-        <div style={style} ref={sizeRef}>
-
+        <div style={style}>
+            {wrappedChildren}
         </div>
-
     )
 
 

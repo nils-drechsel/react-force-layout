@@ -13,10 +13,11 @@ type Props = {
     setRect: (id: string, rect: Rect) => void,
     calculateForceVector: (id: string) => Vector;
     removeComponent: (id: string) => void,
+    size: number | null,
 }
 
 
-export const LayoutElement: FunctionComponent<Props> = ({ children, initialX, initialY, setRect, calculateForceVector, removeComponent }) => {
+export const LayoutElement: FunctionComponent<Props> = ({ children, initialX, initialY, setRect, calculateForceVector, removeComponent, size }) => {
 
     const [rectState, setRectState] = useState({ x: initialX, y: initialY, width: 0, height: 0 } as Rect)
     const [drag, setDrag] = useState(false);
@@ -42,6 +43,7 @@ export const LayoutElement: FunctionComponent<Props> = ({ children, initialX, in
             removeComponent={removeComponent}
             drag={drag}
             setDrag={setDrag}
+            size={size}
         >
 
             {children}

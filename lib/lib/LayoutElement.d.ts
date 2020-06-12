@@ -6,6 +6,7 @@ declare type Props = {
     setRect: (id: string, rect: Rect) => void;
     calculateForceVector: (id: string) => Vector;
     removeComponent: (id: string) => void;
+    size: number | null;
 };
 export declare const LayoutElement: FunctionComponent<Props>;
 export {};

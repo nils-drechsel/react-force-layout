@@ -14,10 +14,11 @@ type Props = {
     removeComponent: (id: string) => void,
     drag: boolean,
     setDrag: (drag: boolean) => void,
+    size: number | null,
 }
 
 
-export const MovableLayoutElement: FunctionComponent<Props> = ({ children, x, y, setRect, calculateForceVector, removeComponent, drag, setDrag }) => {
+export const MovableLayoutElement: FunctionComponent<Props> = ({ children, x, y, setRect, calculateForceVector, removeComponent, drag, setDrag, size }) => {
 
     const sizeRef = useRef(null);
     const sizes = useComponentSize(sizeRef);
@@ -95,7 +96,6 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, x, y,
     }
 
 
-
     const style = {
         padding: 0,
         margin: 0,
@@ -103,7 +103,10 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, x, y,
         zIndex: 1000,
         pointerEvents: "auto",
         touchAction: "auto",
+        width: sizes && size && sizes.width >= sizes.height ? "" + size + "%" : "auto",
+        height: "auto",//sizes && size && sizes.width < sizes.height ? "" + size + "%" : "auto",
     } as React.CSSProperties;
+
 
 
 

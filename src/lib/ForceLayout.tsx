@@ -109,6 +109,7 @@ const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<st
 const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, Rect>>, setComponents: (callback: (state: Map<string, Rect>) => Map<string, Rect>) => void, forceConstant: number, dimRef: MutableRefObject<Rect | undefined>) => {
 
     const setRect = (id: string, rect: Rect) => {
+        console.log("SET RECT", id, rect);
         setComponents((state: Map<string, Rect>) => {
             const newState = new Map(state);
             newState.set(id, rect);
@@ -124,14 +125,21 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
         })
     }
 
+    const e = element as any;
+    const initialPosition = "forceLayoutInitialPosition" in e.props ? e.props.forceLayoutInitialPosition : { x: 0, y: 0 };
+
+    const size = "forceLayoutSize" in e.props ? e.props.forceLayoutSize : null;
+
+    console.log("initialPosition", initialPosition);
 
     return (
         <LayoutElement
-            initialX={0}
-            initialY={0}
+            initialX={initialPosition.x}
+            initialY={initialPosition.y}
             setRect={setRect}
             removeComponent={removeComponent}
             calculateForceVector={(id: string) => calculateForceVector(id, componentsRef, forceConstant, dimRef)}
+            size={size}
         >
             {element}
         </LayoutElement>
@@ -163,7 +171,7 @@ export const ForceLayout: FunctionComponent<Props> = ({ children, forceConstant,
     const style = {
         padding: 0,
         margin: 0,
-        position: "absolute",
+        position: "relative",
         width: "100%",
         height: "100%",
         zIndex: 901,

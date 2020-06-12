@@ -8,6 +8,7 @@ declare type Props = {
     removeComponent: (id: string) => void;
     drag: boolean;
     setDrag: (drag: boolean) => void;
+    size: number | null;
 };
 export declare const MovableLayoutElement: FunctionComponent<Props>;
 declare const _default: React.ForwardRefExoticComponent<React.PropsWithChildren<Props>>;

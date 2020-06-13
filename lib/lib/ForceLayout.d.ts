@@ -1,7 +1,11 @@
 import { FunctionComponent } from 'react';
 declare type Props = {
     forceConstant: number;
-    dimensions?: Rect;
+    dimensions?: Dimensions;
+};
+export declare type Dimensions = {
+    width: number;
+    height: number;
 };
 export declare type Vector = {
     x: number;

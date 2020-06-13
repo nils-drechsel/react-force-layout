@@ -3,11 +3,21 @@ import { LayoutElement } from './LayoutElement';
 
 type Props = {
     forceConstant: number,
-    dimensions?: Rect,
+    dimensions?: Dimensions,
+}
+
+const convertToCoordinates = (a: Rect) => {
+    return ({
+        x0: a.x,
+        x1: a.x + a.width,
+        y0: a.y,
+        y1: a.y + a.height,
+    })
 }
 
 
 const calculateOverlap = (a: Rect, b: Rect): number => {
+
     const xa1 = a.x;
     const xa2 = a.x + a.width;
     const ya1 = a.y;
@@ -22,6 +32,27 @@ const calculateOverlap = (a: Rect, b: Rect): number => {
     const intersection = Math.max(0, Math.min(xa2, xb2) - Math.max(xa1, xb1)) * Math.max(0, Math.min(ya2, yb2) - Math.max(ya1, yb1));
 
     return intersection / (a.width * a.height);
+}
+
+const calculateSeparation = (a: Rect, b: Rect): number => {
+    const centreA = getCentre(a);
+    const centreB = getCentre(b);
+
+    const v = calculateVector(centreA, centreB);
+    v.x = Math.max(0, Math.abs(v.x) - (a.width + b.width) / 2);
+    v.y = Math.max(0, Math.abs(v.y) - (a.height + b.height) / 2);
+
+    return vectorLength(v);
+
+}
+
+
+
+
+
+export type Dimensions = {
+    width: number,
+    height: number,
 }
 
 export type Vector = {
@@ -57,7 +88,17 @@ const calculateVector = (centre0: Vector, centre1: Vector): Vector => {
 }
 
 
-const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<string, Rect>>, forceConstant: number, dimRef: MutableRefObject<Rect | undefined>): Vector => {
+const calculateForce = (centre0: Vector, centre1: Vector, forceConstant: number) => {
+    const v = calculateVector(centre0, centre1);
+    const vl = vectorLength(v);
+    return vectorMult(v, -forceConstant / vl);
+}
+
+const ATTRACTION_DISTANCE = 250;
+const VOID_DISTANCE = 25;
+const ATTRACTION_FACTOR = -1 / 5;
+
+const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<string, Rect>>, forceConstant: number, dimRef: MutableRefObject<Dimensions | undefined>): Vector => {
 
     const components = componentsRef.current;
 
@@ -74,13 +115,7 @@ const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<st
 
         const overlap = calculateOverlap(component, value);
         if (overlap > 0) {
-            const otherCentre = getCentre(value);
-            const v = calculateVector(centre, otherCentre);
-            const vl = vectorLength(v);
-            const forceVector = vectorMult(v, -forceConstant / vl);
-
-            vector = vectorAdd(vector, forceVector);
-
+            vector = vectorAdd(vector, calculateForce(centre, getCentre(value), forceConstant));
         }
 
     });
@@ -91,9 +126,13 @@ const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<st
     if (dimensions) {
         if (component.x < 0) vector = vectorAdd(vector, vectorMult({ x: 1, y: 0 }, forceConstant));
         else if (component.x + component.width > dimensions.width) vector = vectorAdd(vector, vectorMult({ x: -1, y: 0 }, forceConstant));
+        else if (component.x < ATTRACTION_DISTANCE && component.x > VOID_DISTANCE) vector = vectorAdd(vector, vectorMult({ x: 1, y: 0 }, forceConstant * ATTRACTION_FACTOR));
+        else if (component.x + component.width > dimensions.width - ATTRACTION_DISTANCE && component.x + component.width < dimensions.width - VOID_DISTANCE) vector = vectorAdd(vector, vectorMult({ x: -1, y: 0 }, forceConstant * ATTRACTION_FACTOR));
 
         if (component.y < 0) vector = vectorAdd(vector, vectorMult({ x: 0, y: 1 }, forceConstant));
         else if (component.y + component.height > dimensions.height) vector = vectorAdd(vector, vectorMult({ x: 0, y: -1 }, forceConstant));
+        else if (component.y < ATTRACTION_DISTANCE && component.y > VOID_DISTANCE) vector = vectorAdd(vector, vectorMult({ x: 0, y: 1 }, forceConstant * ATTRACTION_FACTOR));
+        else if (component.y + component.height > dimensions.height - ATTRACTION_DISTANCE && component.y + component.height < dimensions.height - VOID_DISTANCE) vector = vectorAdd(vector, vectorMult({ x: 0, y: -1 }, forceConstant * ATTRACTION_FACTOR));
     }
 
 
@@ -106,7 +145,7 @@ const calculateForceVector = (id: string, componentsRef: MutableRefObject<Map<st
 
 
 
-const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, Rect>>, setComponents: (callback: (state: Map<string, Rect>) => Map<string, Rect>) => void, forceConstant: number, dimRef: MutableRefObject<Rect | undefined>) => {
+const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, Rect>>, setComponents: (callback: (state: Map<string, Rect>) => Map<string, Rect>) => void, forceConstant: number, dimRef: MutableRefObject<Dimensions | undefined>) => {
 
     const setRect = (id: string, rect: Rect) => {
         console.log("SET RECT", id, rect);

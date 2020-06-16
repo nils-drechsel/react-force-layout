@@ -1,5 +1,5 @@
 {
-  "name": "react-split-layout",
+  "name": "react-split-strip-packing-layout",
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nils-drechsel/react-split-layout.git"
+    "url": "git+https://github.com/nils-drechsel/react-split-strip-packing-layout.git"
   },
   "author": "Nils J. D. Drechsel",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nils-drechsel/react-split-layout/issues"
+    "url": "https://github.com/nils-drechsel/react-split-strip-packing-layout/issues"
   },
-  "homepage": "https://github.com/nils-drechsel/react-split-layout#readme",
+  "homepage": "https://github.com/nils-drechsel/react-split-strip-packing-layout#readme",
   "devDependencies": {
     "@types/react": "^16.9.34",
     "typescript": "^3.8.3"

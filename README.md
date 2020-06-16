@@ -1,4 +1,4 @@
-# react-split-layout
+# react-split-strip-packing-layout
 
 A react layout based on the [Split Algorithm](https://en.wikipedia.org/wiki/Strip_packing_problem#The_split_algorithm_(SP)) by Golan et al. [doi](https://doi.org/10.1137%2F0210042). It's functional, though still being developed. Child components are packed from either the top left or the bottom reight whereas it is attempted to minimise the hight.
 

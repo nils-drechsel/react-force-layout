@@ -6,7 +6,7 @@ A react layout based on the [Split Algorithm](https://en.wikipedia.org/wiki/Stri
 ## Install
 
 ```bash
-npm install react-split-layout
+npm install react-split-strip-packing-layout
 ```
 
 ## Usage

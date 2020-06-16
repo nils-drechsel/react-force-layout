@@ -14,7 +14,7 @@ npm install react-split-layout
 The main layout component is `<SplitLayout>`. All its children are subject of the layout algorithm and are wrapped by divs that are draggable and resizable. The resize is done by giving the children some of the following properties:
 1. splitLayoutWidth: Defines the extend in the horizontal direction
 2. splitLayoutHeight: Defines the extend in the vertical direction
-3. splitLayoutFlip: If true, and if the component is vertical (`height > width`)) then splitLayoutWidth and splitLayoutHeight are flipped (i.e. then splitLayoutWidth defines the height and splitLayoutHeight the width)
+3. splitLayoutFlip: If true, and if the component is vertical (`height > width`)), then splitLayoutWidth and splitLayoutHeight are flipped (i.e. then splitLayoutWidth defines the height and splitLayoutHeight the width)
 
 
 

@@ -25,6 +25,7 @@
     "@rehooks/component-size": "^1.0.3",
     "@types/uuid": "^8.0.0",
     "fast-equals": "^2.0.0",
+    "incremental-average": "^1.1.0",
     "react-draggable": "^4.4.3",
     "react-spring": "^8.0.27",
     "react-use-animationframe": "^1.0.0",

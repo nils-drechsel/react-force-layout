@@ -1,49 +1,49 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState, MutableRefObject } from 'react';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size'
 import { v4 as uuidv4 } from 'uuid';
-import { Rect, Vector } from "./ForceLayout";
 import { useAnimationFrame } from "react-use-animationframe";
 import Draggable, { DraggableData, DraggableEventHandler } from 'react-draggable';
 import { useSpring, config } from 'react-spring'
 import MovableLayoutElement from './MovableLayoutElement';
+import { LayoutComponent, Dimensions, Vector } from "./types";
 
 type Props = {
     initialX: number,
     initialY: number,
-    setRect: (id: string, rect: Rect) => void,
-    calculateForceVector: (id: string) => Vector;
+    setRect: (id: string, rect: LayoutComponent) => void,
     removeComponent: (id: string) => void,
     size: number | null,
+    dragRef: MutableRefObject<string | null>
+    componentsRef: MutableRefObject<Map<string, LayoutComponent>>
 }
 
 
-export const LayoutElement: FunctionComponent<Props> = ({ children, initialX, initialY, setRect, calculateForceVector, removeComponent, size }) => {
+export const LayoutElement: FunctionComponent<Props> = ({ children, initialX, initialY, componentsRef, setRect, size, removeComponent, dragRef }) => {
 
-    const [rectState, setRectState] = useState({ x: initialX, y: initialY, width: 0, height: 0 } as Rect)
-    const [drag, setDrag] = useState(false);
+    const [id] = useState(uuidv4());
 
-
-
-    const props = useSpring({ x: rectState.x, y: rectState.y, config: drag ? { duration: 1 } : { mass: 5, tension: 160, friction: 14 } });
+    const rect = componentsRef.current.has(id) ? componentsRef.current.get(id)! : { id: id, x: initialX, y: initialY, width: 0, height: 0 };
 
 
 
-    const updateRect = (id: string, rect: Rect) => {
+    const props = useSpring({ x: rect.x, y: rect.y, config: dragRef.current === id ? { duration: 1 } : { mass: 1, tension: 210, friction: 20 } });
+
+
+
+    const updateRect = (id: string, rect: LayoutComponent) => {
         setRect(id, rect);
-        setRectState(rect);
     }
 
 
     return (
         <MovableLayoutElement
+            id={id}
             x={props.x}
             y={props.y}
             setRect={updateRect}
-            calculateForceVector={calculateForceVector}
             removeComponent={removeComponent}
-            drag={drag}
-            setDrag={setDrag}
             size={size}
+            dragRef={dragRef}
         >
 
             {children}

@@ -5,12 +5,13 @@ import { splitPacking } from "./splitPacking";
 
 type Props = {
     dimensions: Dimensions,
+    bottomRight?: boolean
 }
 
 
 
 const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, LayoutComponent>>, setComponents: (callback: (state: Map<string, LayoutComponent>) => Map<string, LayoutComponent>) => void,
-    dimRef: MutableRefObject<Dimensions>, dragRef: MutableRefObject<string | null>) => {
+    dimRef: MutableRefObject<Dimensions>, dragRef: MutableRefObject<string | null>, bottomRight?: boolean) => {
 
     const setRect = (id: string, rect: LayoutComponent) => {
 
@@ -32,7 +33,7 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
         setComponents((state: Map<string, LayoutComponent>) => {
             const newState = new Map(state);
             newState.delete(id);
-            splitPacking(Array.from(newState.values()), dimRef.current, true);
+            splitPacking(Array.from(newState.values()), dimRef.current, bottomRight);
             return newState;
         })
     }
@@ -61,7 +62,7 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
 
 
 
-export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions }) => {
+export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions, bottomRight }) => {
 
     const [components, setComponents] = useState(new Map() as Map<string, LayoutComponent>);
     const componentsRef = useRef(components);
@@ -89,7 +90,7 @@ export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions }) 
     } as React.CSSProperties;
 
 
-    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, dimRef, dragRef));
+    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, dimRef, dragRef, bottomRight));
 
 
     return (

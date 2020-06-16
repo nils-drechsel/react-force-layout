@@ -1,6 +1,6 @@
 # react-split-strip-packing-layout
 
-A react layout based on the [Split Algorithm](https://en.wikipedia.org/wiki/Strip_packing_problem#The_split_algorithm_(SP)) by Golan et al. [doi](https://doi.org/10.1137%2F0210042). It's functional, though still being developed. Child components are packed from either the top left or the bottom reight whereas it is attempted to minimise the hight.
+A react layout based on the [Split Algorithm](https://en.wikipedia.org/wiki/Strip_packing_problem#The_split_algorithm_(SP)) by Golan et al. [doi](https://doi.org/10.1137%2F0210042). It's functional, though still being developed. Child components are packed from either the top left or the bottom reight whereas it is attempted to minimise the height.
 
 
 ## Install
@@ -27,6 +27,7 @@ export const Component: FunctionComponent = () => {
 
     // the dimensions of the container in which the layout will happen
     const dimensions: Dimensions = {width: 1200, height: 800};
+    const bottomRight: boolean = true; // if true, layout starts from bottom right, otherwise top left
 
     const width = "10%"; // this component's width will use 10% of the container size
     const height = "auto";
@@ -45,6 +46,7 @@ export const Component: FunctionComponent = () => {
     return (
         <SplitLayout
             dimensions={dimensions}
+            bottomRight={bottomRight}
         >
             {components}
         </SplitLayout>

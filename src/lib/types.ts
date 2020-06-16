@@ -1,6 +1,3 @@
-
-
-
 export type LayoutComponent = {
     id: string,
     x: number,
@@ -26,9 +23,3 @@ export type SubStrip = {
     itemWidth: number,
 }
 
-
-
-export type Vector = {
-    x: number,
-    y: number,
-}

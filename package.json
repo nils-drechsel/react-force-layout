@@ -1,6 +1,6 @@
 {
-  "name": "react-force-layout",
-  "version": "0.1.0",
+  "name": "react-split-layout",
+  "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nils-drechsel/react-force-layout.git"
+    "url": "git+https://github.com/nils-drechsel/react-split-layout.git"
   },
   "author": "Nils J. D. Drechsel",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nils-drechsel/react-force-layout/issues"
+    "url": "https://github.com/nils-drechsel/react-split-layout/issues"
   },
-  "homepage": "https://github.com/nils-drechsel/react-force-layout#readme",
+  "homepage": "https://github.com/nils-drechsel/react-split-layout#readme",
   "devDependencies": {
     "@types/react": "^16.9.34",
     "typescript": "^3.8.3"
@@ -25,10 +25,8 @@
     "@rehooks/component-size": "^1.0.3",
     "@types/uuid": "^8.0.0",
     "fast-equals": "^2.0.0",
-    "incremental-average": "^1.1.0",
     "react-draggable": "^4.4.3",
     "react-spring": "^8.0.27",
-    "react-use-animationframe": "^1.0.0",
     "react-use-dimensions": "^1.2.1",
     "uuid": "^8.1.0"
   }

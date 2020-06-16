@@ -4,13 +4,10 @@ import { LayoutComponent, Dimensions, SubStrip } from "./types";
 
 export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dimensions, inverted?: boolean) => {
 
-    console.log("COMPONENTS START:", JSON.stringify(components));
-
     // sort deterministacally into nonincreasing order
+    const remainingComponents = [...components];
 
-    const I = [...components];
-
-    I.sort((a, b) => {
+    remainingComponents.sort((a, b) => {
         const cmp = a.width - b.width;
         if (cmp !== 0) return cmp;
         return a.id > b.id ? 1 : -1;
@@ -25,47 +22,44 @@ export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dim
         itemWidth: dimensions.width,
     }
 
-    let S: Array<SubStrip> = [initialS];
+    let strip: Array<SubStrip> = [initialS];
 
 
-    while (I.length > 0) {
-        const i: LayoutComponent = I.shift()!;
+    while (remainingComponents.length > 0) {
+        const component: LayoutComponent = remainingComponents.shift()!;
 
-        const S2 = S.filter(s => s.width - s.itemWidth >= i.width);
+        const usableStrips = strip.filter(s => s.width - s.itemWidth >= component.width);
 
-        if (S2.length === 0) {
-            const targetS = S.reduce((minS, s) => s.upper < minS.upper ? s : minS, S[0]);
-            i.x = inverted ? dimensions.width - (targetS.x + i.width) : targetS.x;
-            i.y = inverted ? dimensions.height - (targetS.upper + i.height) : targetS.upper;
-            targetS.lower = targetS.upper;
-            targetS.upper = targetS.upper + i.height;
-            targetS.itemWidth = i.width;
+        if (usableStrips.length === 0) {
+            const targetStrip = strip.reduce((minStrip, s) => s.upper < minStrip.upper ? s : minStrip, strip[0]);
+            component.x = inverted ? dimensions.width - (targetStrip.x + component.width) : targetStrip.x;
+            component.y = inverted ? dimensions.height - (targetStrip.upper + component.height) : targetStrip.upper;
+            targetStrip.lower = targetStrip.upper;
+            targetStrip.upper = targetStrip.upper + component.height;
+            targetStrip.itemWidth = component.width;
         } else {
-            const targetS = S.reduce((minS, s) => s.lower < minS.lower ? s : minS, S[0]);
-            i.x = inverted ? dimensions.width - (targetS.x + targetS.itemWidth + i.width) : targetS.x + targetS.itemWidth;
-            i.y = inverted ? dimensions.height - (targetS.lower + i.height) : targetS.lower;
-            S = S.filter(s => s !== targetS);
-            S.push({
-                x: targetS.x,
-                y: targetS.upper,
-                width: targetS.itemWidth,
-                lower: targetS.upper,
-                upper: targetS.upper,
-                itemWidth: targetS.itemWidth
+            const targetStrip = strip.reduce((minStrip, s) => s.lower < minStrip.lower ? s : minStrip, strip[0]);
+            component.x = inverted ? dimensions.width - (targetStrip.x + targetStrip.itemWidth + component.width) : targetStrip.x + targetStrip.itemWidth;
+            component.y = inverted ? dimensions.height - (targetStrip.lower + component.height) : targetStrip.lower;
+            strip = strip.filter(s => s !== targetStrip);
+            strip.push({
+                x: targetStrip.x,
+                y: targetStrip.upper,
+                width: targetStrip.itemWidth,
+                lower: targetStrip.upper,
+                upper: targetStrip.upper,
+                itemWidth: targetStrip.itemWidth
             })
-            S.push({
-                x: targetS.x + targetS.itemWidth,
-                y: targetS.lower,
-                width: targetS.width - targetS.itemWidth,
-                lower: targetS.lower,
-                upper: i.height,
-                itemWidth: i.width
+            strip.push({
+                x: targetStrip.x + targetStrip.itemWidth,
+                y: targetStrip.lower,
+                width: targetStrip.width - targetStrip.itemWidth,
+                lower: targetStrip.lower,
+                upper: component.height,
+                itemWidth: component.width
             })
 
         }
     }
-
-    console.log("COMPONENTS:", components);
-
 
 }

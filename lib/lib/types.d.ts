@@ -17,7 +17,3 @@ export declare type SubStrip = {
     upper: number;
     itemWidth: number;
 };
-export declare type Vector = {
-    x: number;
-    y: number;
-};

@@ -1,9 +1,8 @@
-import React, { FunctionComponent, useEffect, useRef, useState, MutableRefObject } from 'react';
+import React, { FunctionComponent, useEffect, useRef, MutableRefObject } from 'react';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size'
-import { v4 as uuidv4 } from 'uuid';
 import Draggable, { DraggableData, DraggableEventHandler } from 'react-draggable';
-import { useSpring, animated } from 'react-spring'
-import { LayoutComponent, Vector } from "./types";
+import { animated } from 'react-spring'
+import { LayoutComponent } from "./types";
 
 type Props = {
     id: string,
@@ -11,12 +10,14 @@ type Props = {
     y: number,
     setRect: (id: string, rect: LayoutComponent) => void,
     removeComponent: (id: string) => void,
-    size: number | null,
+    width: any,
+    height: any,
+    flip: boolean,
     dragRef: MutableRefObject<string | null>
 }
 
 
-export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x, y, setRect, removeComponent, dragRef, size }) => {
+export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x, y, setRect, removeComponent, dragRef, width, height, flip }) => {
 
     const sizeRef = useRef(null);
     const sizes = useComponentSize(sizeRef);
@@ -54,21 +55,22 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
     }, []);
 
 
-
-
     const handleDrag = (e: Event, data: DraggableData) => {
         e.preventDefault();
         const rect = { id: id, x: data.x, y: data.y, width: sizesRef.current ? sizesRef.current.width : 0, height: sizesRef.current ? sizesRef.current.height : 0 }
         setRect(id, rect);
     }
 
-    const handleDragStart = (e: Event, data: DraggableData) => {
+    const handleDragStart = (_e: Event, _data: DraggableData) => {
         dragRef.current = id;
     }
 
-    const handleDragStop = (e: Event, data: DraggableData) => {
+    const handleDragStop = (_e: Event, _data: DraggableData) => {
         dragRef.current = null;
     }
+
+    let displayWidth = flip && sizes && sizes.height > sizes.width ? height || "auto" : width || "auto";
+    let displayHeight = flip && sizes && sizes.height > sizes.width ? width || "auto" : height || "auto";
 
 
     const style = {
@@ -78,8 +80,8 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
         zIndex: 1000,
         pointerEvents: "auto",
         touchAction: "auto",
-        width: sizes && size && sizes.width >= sizes.height ? "" + size + "%" : "auto",
-        height: sizes && size && sizes.width < sizes.height ? "" + size + "%" : "auto",
+        width: displayWidth,
+        height: displayHeight,
     } as React.CSSProperties;
 
 

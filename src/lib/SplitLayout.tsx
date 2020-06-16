@@ -1,19 +1,16 @@
-import React, { FunctionComponent, useEffect, useState, useRef, ReactElement, MutableRefObject } from 'react';
+import React, { FunctionComponent, useState, useRef, MutableRefObject } from 'react';
 import { LayoutElement } from './LayoutElement';
-import { useAnimationFrame } from "react-use-animationframe";
-import { LayoutComponent, Dimensions, Vector } from "./types";
-import { calculateForceVectors, vectorAdd } from "./force";
+import { LayoutComponent, Dimensions } from "./types";
 import { splitPacking } from "./splitPacking";
 
 type Props = {
-    forceConstant: number,
     dimensions: Dimensions,
 }
 
 
 
 const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, LayoutComponent>>, setComponents: (callback: (state: Map<string, LayoutComponent>) => Map<string, LayoutComponent>) => void,
-    forceConstant: number, dimRef: MutableRefObject<Dimensions>, dragRef: MutableRefObject<string | null>) => {
+    dimRef: MutableRefObject<Dimensions>, dragRef: MutableRefObject<string | null>) => {
 
     const setRect = (id: string, rect: LayoutComponent) => {
 
@@ -41,21 +38,20 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
     }
 
     const e = element as any;
-    const initialPosition = "forceLayoutInitialPosition" in e.props ? e.props.forceLayoutInitialPosition : { x: 0, y: 0 };
 
-    const size = "forceLayoutSize" in e.props ? e.props.forceLayoutSize : null;
-
-    console.log("initialPosition", initialPosition);
+    const width = "splitLayoutWidth" in e.props ? e.props.splitLayoutWidth : null;
+    const height = "splitLayoutHeight" in e.props ? e.props.splitLayoutHeight : null;
+    const flip = "splitLayoutFlip" in e.props ? e.props.splitLayoutFlip : false;
 
     return (
         <LayoutElement
-            initialX={initialPosition.x}
-            initialY={initialPosition.y}
             setRect={setRect}
             dragRef={dragRef}
             componentsRef={componentsRef}
             removeComponent={removeComponent}
-            size={size}
+            width={width}
+            height={height}
+            flip={flip}
         >
             {element}
         </LayoutElement>
@@ -65,7 +61,7 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
 
 
 
-export const ForceLayout: FunctionComponent<Props> = ({ children, forceConstant, dimensions }) => {
+export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions }) => {
 
     const [components, setComponents] = useState(new Map() as Map<string, LayoutComponent>);
     const componentsRef = useRef(components);
@@ -93,7 +89,7 @@ export const ForceLayout: FunctionComponent<Props> = ({ children, forceConstant,
     } as React.CSSProperties;
 
 
-    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, forceConstant, dimRef, dragRef));
+    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, dimRef, dragRef));
 
 
     return (

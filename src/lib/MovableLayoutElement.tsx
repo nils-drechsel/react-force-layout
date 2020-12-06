@@ -10,14 +10,11 @@ type Props = {
     y: number,
     setRect: (id: string, rect: LayoutComponent) => void,
     removeComponent: (id: string) => void,
-    width: any,
-    height: any,
-    flip: boolean,
     dragRef: MutableRefObject<string | null>
 }
 
 
-export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x, y, setRect, removeComponent, dragRef, width, height, flip }) => {
+export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x, y, setRect, removeComponent, dragRef }) => {
 
     const sizeRef = useRef(null);
     const sizes = useComponentSize(sizeRef);
@@ -27,7 +24,8 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
     posRef.current = { x, y };
 
 
-
+    const elWidth = sizes.width;
+    const elHeight = sizes.height;
 
     useEffect(() => {
         if (sizes && (!sizesRef.current || sizes.height !== sizesRef.current.height || sizes.width !== sizesRef.current.width)) {
@@ -44,7 +42,7 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
             setRect(id, rect);
         }
 
-    }, [sizes])
+    }, [elWidth, elHeight])
 
     useEffect(() => {
 
@@ -69,10 +67,6 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
         dragRef.current = null;
     }
 
-    let displayWidth = flip && sizes && sizes.height > sizes.width ? height || "auto" : width || "auto";
-    let displayHeight = flip && sizes && sizes.height > sizes.width ? width || "auto" : height || "auto";
-
-
     const style = {
         padding: "8px",
         margin: "0",
@@ -80,8 +74,6 @@ export const MovableLayoutElement: FunctionComponent<Props> = ({ children, id, x
         zIndex: 1000,
         pointerEvents: "auto",
         touchAction: "auto",
-        width: displayWidth,
-        height: displayHeight,
     } as React.CSSProperties;
 
 

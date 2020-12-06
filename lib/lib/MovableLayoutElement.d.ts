@@ -6,9 +6,6 @@ declare type Props = {
     y: number;
     setRect: (id: string, rect: LayoutComponent) => void;
     removeComponent: (id: string) => void;
-    width: any;
-    height: any;
-    flip: boolean;
     dragRef: MutableRefObject<string | null>;
 };
 export declare const MovableLayoutElement: FunctionComponent<Props>;

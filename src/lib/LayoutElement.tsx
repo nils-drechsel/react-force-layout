@@ -7,15 +7,12 @@ import { LayoutComponent } from "./types";
 type Props = {
     setRect: (id: string, rect: LayoutComponent) => void,
     removeComponent: (id: string) => void,
-    width: any,
-    height: any,
-    flip: boolean,
     dragRef: MutableRefObject<string | null>
     componentsRef: MutableRefObject<Map<string, LayoutComponent>>
 }
 
 
-export const LayoutElement: FunctionComponent<Props> = ({ children, componentsRef, setRect, width, height, flip, removeComponent, dragRef }) => {
+export const LayoutElement: FunctionComponent<Props> = ({ children, componentsRef, setRect, removeComponent, dragRef }) => {
 
     const [id] = useState(uuidv4());
     const [visible, setVisible] = useState(false);
@@ -44,9 +41,6 @@ export const LayoutElement: FunctionComponent<Props> = ({ children, componentsRe
             y={visible ? props.y : rect.y}
             setRect={updateRect}
             removeComponent={removeComponent}
-            width={width}
-            height={height}
-            flip={flip}
             dragRef={dragRef}
         >
 

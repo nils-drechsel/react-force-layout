@@ -6,6 +6,8 @@ export declare type LayoutComponent = {
     height: number;
 };
 export declare type Dimensions = {
+    x: number;
+    y: number;
     width: number;
     height: number;
 };

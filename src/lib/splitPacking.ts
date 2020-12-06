@@ -2,7 +2,9 @@ import { LayoutComponent, Dimensions, SubStrip } from "./types";
 
 
 
-export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dimensions, inverted?: boolean) => {
+export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dimensions, inverted?: boolean, logging?: boolean) => {
+
+    if (logging) console.log("creating split packing on " + components.length + " components using dimensions ", dimensions, inverted);
 
     // sort deterministacally into nonincreasing order
     const remainingComponents = [...components];
@@ -61,5 +63,7 @@ export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dim
 
         }
     }
+
+    if (logging) console.log("component layout", components);
 
 }

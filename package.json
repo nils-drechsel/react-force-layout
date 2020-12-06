@@ -1,6 +1,6 @@
 {
   "name": "react-split-strip-packing-layout",
-  "version": "1.0.2",
+  "version": "1.0.11",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/nils-drechsel/react-split-strip-packing-layout.git"
   },
   "author": "Nils J. D. Drechsel",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nils-drechsel/react-split-strip-packing-layout/issues"
   },

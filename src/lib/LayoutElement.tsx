@@ -1,52 +1,73 @@
-import React, { FunctionComponent, useState, MutableRefObject, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect, useContext, useRef, MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useSpring } from 'react-spring'
-import MovableLayoutElement from './MovableLayoutElement';
-import { LayoutComponent } from "./types";
+import { SplitLayoutContext } from './SplitLayout';
+import { ComponentPosition, LayoutManager } from './LayoutManager';
+import useResizeObserver from "use-resize-observer/polyfilled";
 
-type Props = {
-    setRect: (id: string, rect: LayoutComponent) => void,
-    removeComponent: (id: string) => void,
-    dragRef: MutableRefObject<string | null>
-    componentsRef: MutableRefObject<Map<string, LayoutComponent>>
+interface Props {
 }
 
 
-export const LayoutElement: FunctionComponent<Props> = ({ children, componentsRef, setRect, removeComponent, dragRef }) => {
+export const LayoutElement: FunctionComponent<Props> = ({ children }) => {
 
     const [id] = useState(uuidv4());
-    const [visible, setVisible] = useState(false);
+    const layoutManager: LayoutManager = useContext(SplitLayoutContext);
+    const [config, setConfig] = useState({ x: 0, y: 0, visible: false } as ComponentPosition);
 
-    const rect = componentsRef.current.has(id) ? componentsRef.current.get(id)! : { id: id, x: -1, y: -1, width: 0, height: 0 };
-
-    const props = useSpring({ x: rect.x, y: rect.y, config: dragRef.current === id || !visible ? { duration: 1, mass: 0, tension: 10000, friction: 0 } : { mass: 1, tension: 210, friction: 20 } });
+    const ref = useRef<HTMLDivElement>() as MutableRefObject<HTMLDivElement>;
+    
+        useResizeObserver<HTMLDivElement>({ref,
+        onResize: ({ width, height }) => {
+            if (width && height) layoutManager.updateDimensions(id, width, height);
+        },
+    });
 
     useEffect(() => {
-        if (!visible && rect.x !== -1 && rect.y !== -1) {
-            setVisible(true);
+
+        layoutManager.registerComponent(id, setConfig);
+
+        return () => {
+            layoutManager.deregisterComponent(id);
         }
-    }, [visible, rect.x, rect.y]);
+
+    }, [id]);
+
+    const setPosition = (x: number, y: number, store: boolean) => {
+        ref.current.style.top = y + "px";
+        ref.current.style.left = x + "px";
+        if (store) {
+            layoutManager.updatePosition(id, x, y)
+        }
+    };
 
 
-
-    const updateRect = (id: string, rect: LayoutComponent) => {
-        setRect(id, rect);
+    const setAutoLayout = (turnOn: boolean) => {
+        layoutManager.setAutoLayout(turnOn);
     }
 
+    const newElement = React.cloneElement(children as any, {
+        setPosition,
+        setAutoLayout,
+        x: config.x,
+        y: config.y,
+    });    
+
+    const style = {
+        margin: "0",
+        position: "absolute",
+        zIndex: 1000,
+        left: config.x,
+        top: config.y,
+
+    } as React.CSSProperties;
 
     return (
-        <MovableLayoutElement
-            id={id}
-            x={visible ? props.x : rect.x}
-            y={visible ? props.y : rect.y}
-            setRect={updateRect}
-            removeComponent={removeComponent}
-            dragRef={dragRef}
+        <div
+            ref={ref}
+            style={style}
         >
-
-            {children}
-
-        </MovableLayoutElement>
+            {newElement}
+        </div>
     )
 
 

@@ -1,7 +1,6 @@
-import React, { FunctionComponent, useState, useRef, MutableRefObject, useEffect } from 'react';
+import React, { FunctionComponent, useRef, createContext, useEffect } from 'react';
 import { LayoutElement } from './LayoutElement';
-import { LayoutComponent, Dimensions } from "./types";
-import { splitPacking } from "./splitPacking";
+import { Dimensions, LayoutManager } from './LayoutManager';
 
 type Props = {
     dimensions: Dimensions,
@@ -11,44 +10,9 @@ type Props = {
 
 
 
-const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<Map<string, LayoutComponent>>, setComponents: (callback: (state: Map<string, LayoutComponent>) => Map<string, LayoutComponent>) => void,
-    dimRef: MutableRefObject<Dimensions>, dragRef: MutableRefObject<string | null>, bottomRight?: boolean, logging?: boolean) => {
-    
-    const setRect = (id: string, rect: LayoutComponent) => {
-
-        if (logging) console.log("setting rect", id, rect);
-
-        setComponents((state: Map<string, LayoutComponent>) => {
-            const newState = new Map(state);
-            newState.set(id, rect);
-
-            const oldRect = state.get(id)!;
-
-            if (!oldRect || (oldRect.width !== rect.width || oldRect.height !== rect.height)) {
-                splitPacking(Array.from(newState.values()), dimRef.current, bottomRight, logging);
-            }
-
-            return newState;
-        })
-    }
-
-    const removeComponent = (id: string,) => {
-        console.log("removing component",id)
-        setComponents((state: Map<string, LayoutComponent>) => {
-            const newState = new Map(state);
-            newState.delete(id);
-            splitPacking(Array.from(newState.values()), dimRef.current, bottomRight, logging);
-            return newState;
-        })
-    }
-
-
+const wrapElement = (element: React.ReactNode) => {
     return (
         <LayoutElement
-            setRect={setRect}
-            dragRef={dragRef}
-            componentsRef={componentsRef}
-            removeComponent={removeComponent}
         >
             {element}
         </LayoutElement>
@@ -58,40 +22,30 @@ const wrapElement = (element: React.ReactNode, componentsRef: MutableRefObject<M
 
 
 
+export const SplitLayoutContext = createContext<LayoutManager>(null as any);
+
 export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions, bottomRight, logging }) => {
 
-    const [components, setComponents] = useState(new Map() as Map<string, LayoutComponent>);
-    const componentsRef = useRef(components);
-    componentsRef.current = components;
-
-    const dimRef = useRef(dimensions);
-    dimRef.current = dimensions;
+    const wrappedChildren = React.Children.map(children, child => wrapElement(child));
 
 
-    const dragRef = useRef(null as string | null);
-
-    const width = dimensions.width;
-    const height = dimensions.height;
-
-    if (logging) console.log("width/height", width, height);
+    const managerRef = useRef<LayoutManager>();
+    if (!managerRef.current) {
+        console.log("creating layout manager");
+        managerRef.current = new LayoutManager(dimensions, !!bottomRight, logging);
+    }
 
     useEffect(() => {
 
-
-        setComponents((state: Map<string, LayoutComponent>) => {
-
-            if (logging) console.log("refreshing components", state);
-
-            const newState = new Map(state);
-            splitPacking(Array.from(newState.values()), dimRef.current, bottomRight, logging);
-            return newState;
-        })        
-
-
-    }, [width, height, bottomRight]);
-
-
-
+        managerRef.current!.setDimensions({
+            width: dimensions.width,
+            height: dimensions.height,
+            x: dimensions.x,
+            y: dimensions.y,
+        })
+        
+    }, [dimensions.width, dimensions.height, dimensions.x, dimensions.y]);
+    
 
     const style = {
         padding: 0,
@@ -105,12 +59,13 @@ export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions, bo
     } as React.CSSProperties;
 
 
-    const wrappedChildren = React.Children.map(children, child => wrapElement(child, componentsRef, setComponents, dimRef, dragRef, bottomRight, logging));
-
-
     return (
         <div style={style}>
-            {wrappedChildren}
+        <SplitLayoutContext.Provider
+                value={managerRef.current}
+            >
+                {wrappedChildren}
+        </SplitLayoutContext.Provider>
         </div>
     )
 

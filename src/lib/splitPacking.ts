@@ -1,8 +1,16 @@
-import { LayoutComponent, Dimensions, SubStrip } from "./types";
+import { ComponentConfiguration, Dimensions } from "./LayoutManager";
 
 
+type SubStrip = {
+    x: number,
+    y: number,
+    width: number,
+    lower: number,
+    upper: number,
+    itemWidth: number,
+}
 
-export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dimensions, inverted?: boolean, logging?: boolean) => {
+export const splitPacking = (components: Array<ComponentConfiguration>, dimensions: Dimensions, inverted?: boolean, logging?: boolean) => {
 
     if (logging) console.log("creating split packing on " + components.length + " components using dimensions ", dimensions, inverted);
 
@@ -28,7 +36,7 @@ export const splitPacking = (components: Array<LayoutComponent>, dimensions: Dim
 
 
     while (remainingComponents.length > 0) {
-        const component: LayoutComponent = remainingComponents.shift()!;
+        const component: ComponentConfiguration = remainingComponents.shift()!;
 
         const usableStrips = strip.filter(s => s.width - s.itemWidth >= component.width);
 

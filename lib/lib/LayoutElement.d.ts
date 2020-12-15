@@ -1,10 +1,5 @@
-import { FunctionComponent, MutableRefObject } from 'react';
-import { LayoutComponent } from "./types";
-declare type Props = {
-    setRect: (id: string, rect: LayoutComponent) => void;
-    removeComponent: (id: string) => void;
-    dragRef: MutableRefObject<string | null>;
-    componentsRef: MutableRefObject<Map<string, LayoutComponent>>;
-};
+import { FunctionComponent } from 'react';
+interface Props {
+}
 export declare const LayoutElement: FunctionComponent<Props>;
 export {};

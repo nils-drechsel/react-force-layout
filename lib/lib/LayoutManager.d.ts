@@ -5,7 +5,10 @@ export declare type Dimensions = {
     height: number;
 };
 export interface ComponentPositionSetter {
-    (config: ComponentPosition): void;
+    (position: {
+        x: number;
+        y: number;
+    }): void;
 }
 export interface ComponentConfiguration {
     id: string;
@@ -18,7 +21,6 @@ export interface ComponentConfiguration {
 export interface ComponentPosition {
     x: number;
     y: number;
-    visible: boolean;
 }
 export declare class LayoutManager {
     components: Map<string, ComponentConfiguration>;

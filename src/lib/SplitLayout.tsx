@@ -47,26 +47,14 @@ export const SplitLayout: FunctionComponent<Props> = ({ children, dimensions, bo
     }, [dimensions.width, dimensions.height, dimensions.x, dimensions.y]);
     
 
-    const style = {
-        padding: 0,
-        margin: 0,
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        zIndex: 901,
-        pointerEvents: "none",
-        touchAction: "none",
-    } as React.CSSProperties;
 
 
     return (
-        <div style={style}>
         <SplitLayoutContext.Provider
                 value={managerRef.current}
             >
                 {wrappedChildren}
         </SplitLayoutContext.Provider>
-        </div>
     )
 
 

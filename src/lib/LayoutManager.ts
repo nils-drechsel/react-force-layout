@@ -12,7 +12,7 @@ export type Dimensions = {
 
 
 export interface ComponentPositionSetter {
-    (config: ComponentPosition): void
+    (position: { x: number, y: number }): void;
 }
 
 
@@ -28,7 +28,6 @@ export interface ComponentConfiguration {
 export interface ComponentPosition {
     x: number,
     y: number,
-    visible: boolean,
 }
 
 
@@ -90,8 +89,6 @@ export class LayoutManager {
         const config = this.components.get(id)!;
         config.x = x;
         config.y = y;
-
-        config.setConfiguration({ x: x, y: y, visible: !!config.width && !!config.height });
         
     }
 
@@ -120,7 +117,7 @@ export class LayoutManager {
 
         splitPacking(comps, this.dim, this.invert, this.logging);
 
-        comps.forEach(comp => comp.setConfiguration({ x: comp.x, y: comp.y, visible: true }));
+        comps.forEach(comp => comp.setConfiguration({ x: comp.x, y: comp.y}));
 
     }
 
